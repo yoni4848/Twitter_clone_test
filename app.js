@@ -195,23 +195,20 @@ app.get ('/api/posts/:id', async (req, res) => {
     }
 });
 
+app.delete ('/api/posts/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
 
+        const result = await db.query(
+            'DELETE FROM posts WHERE post_id = $1', [id]
+        );
+        if ((result).rowCount === 0){
+            return res.status(404).json({error: 'post not found'});
+        }
 
-
-
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok'
-    });
-});
-
-app.get('/api/info', (req, res) => {
-    res.json({
-        project: 'Twitter clone',
-        version: 1.0
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on on http://localhost:${PORT}`);
-});
+        res.status(200).json({message: 'Post deleted successfuly'});
+    } catch(err){
+        console.error(err);
+        res.status(500).json({error: 'database error'});
+    }
+})
