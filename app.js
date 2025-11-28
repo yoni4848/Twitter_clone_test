@@ -206,9 +206,57 @@ app.delete ('/api/posts/:id', async (req, res) => {
             return res.status(404).json({error: 'post not found'});
         }
 
-        res.status(200).json({message: 'Post deleted successfuly'});
+        res.status(200).json(result.rows[0]);
     } catch(err){
         console.error(err);
         res.status(500).json({error: 'database error'});
     }
-})
+});
+
+app.post('/api/posts/:id/like', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { user_id } = req.body;
+
+        if (!user_id) {
+            return res.status(400).json({error: 'missing required field'});
+        }
+
+        const result = await db.query(
+            'INSERT INTO likes (user_id, post_id) VALUES($1, $2) RETURNING *', [user_id, id]
+        );
+
+        res.status(201).json(result.rows[0]);
+
+    } catch(err){
+        console.error(err);
+
+        if (err.code === '23503'){
+            return res.status(404).json({error: 'post or user not found'});
+        }
+        else if (err.code === '23505'){
+            return res.status(409).json({error: 'post already liked'});
+        }
+
+        res.status(500).json({error: 'database error'});
+
+    }
+  
+  
+});
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok'
+    });
+});
+
+app.get('/api/info', (req, res) => {
+    res.json({
+        project: 'Twitter clone',
+        version: 1.0
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
