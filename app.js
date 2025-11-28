@@ -244,6 +244,36 @@ app.post('/api/posts/:id/like', async (req, res) => {
   
   
 });
+
+app.delete('/api/posts/:id/like/', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const { user_id } = req.body;
+
+        if (!user_id){
+            return res.status(400).json({error: 'user_id required'});
+        }
+        const result = await db.query(
+            'DELETE FROM likes WHERE user_id = $1 AND post_id = $2', [user_id, id]
+        );
+
+        if (result.rowCount === 0){
+            return res.status(404).json({error: 'Post is not liked'});
+        }
+
+        res.status(200).json({message: 'post unliked successfully'});
+
+    } catch(err){
+        console.error(err);
+
+        if (err.code === '23503'){
+            return res.status(404).json({error: 'user_id or post_id not found'});
+        }
+
+        res.status(500).json({error: 'database error'});
+
+    }
+});
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok'
