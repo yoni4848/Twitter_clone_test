@@ -245,7 +245,7 @@ app.post('/api/posts/:id/like', async (req, res) => {
   
 });
 
-app.delete('/api/posts/:id/like/', async (req, res) => {
+app.delete('/api/posts/:id/like', async (req, res) => {
     try{
         const { id } = req.params;
         const { user_id } = req.body;
@@ -272,6 +272,21 @@ app.delete('/api/posts/:id/like/', async (req, res) => {
 
         res.status(500).json({error: 'database error'});
 
+    }
+});
+
+app.get('/api/posts/:id/likes', async (req, res) =>{
+    try{
+        const { id } = req.params;
+        const result = await db.query(
+            'SELECT users.user_id, users.username, users.profile_picture, likes.created_at FROM likes JOIN users ON likes.user_id = users.user_id WHERE likes.post_id = $1', [id]
+        );
+        
+        res.status(200).json(result.rows);
+
+    }catch(err){
+        console.error(err);
+        res.status(500).json({error: 'database error'});
     }
 });
 app.get('/api/health', (req, res) => {
