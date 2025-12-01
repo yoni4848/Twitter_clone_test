@@ -289,6 +289,32 @@ app.get('/api/posts/:id/likes', async (req, res) =>{
         res.status(500).json({error: 'database error'});
     }
 });
+
+app.post('/api/posts/:id/comments', async (req, res) => {
+    try{
+        const { id } = req.params;
+        const { user_id, content } = req.body;
+
+        if (!user_id || !content){
+            return res.status(400).json({error: 'Missing required fields'});
+        }
+        const result = await db.query(
+            'INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3) RETURNING *', [user_id, id, content]
+        );
+
+        res.status(201).json(result.rows[0]);
+
+    }catch(err){
+        console.error(err);
+
+        if (err.code === 23503){
+            return res.status(404).json({error: 'user/post not found'});
+        }
+
+        res.status(500).json({error: 'database error'});
+
+    }
+});
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok'
