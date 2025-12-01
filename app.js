@@ -307,10 +307,27 @@ app.post('/api/posts/:id/comments', async (req, res) => {
     }catch(err){
         console.error(err);
 
-        if (err.code === 23503){
+        if (err.code === '23503'){
             return res.status(404).json({error: 'user/post not found'});
         }
 
+        res.status(500).json({error: 'database error'});
+
+    }
+});
+
+app.get('/api/posts/:id/comments', async (req, res) => {
+    try{
+        const { id } = req.params;
+        
+        const result = await db.query(
+            'SELECT comments.*, users.user_id, users.username, users.profile_picture FROM comments JOIN users ON comments.user_id = users.user_id WHERE comments.post_id = $1 ORDER BY comments.created_at ASC', [id]
+        );
+
+        res.status(200).json(result.rows);
+
+    }catch(err){
+        console.error(err);
         res.status(500).json({error: 'database error'});
 
     }
