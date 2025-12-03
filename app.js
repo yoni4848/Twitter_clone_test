@@ -3,6 +3,7 @@ const db = require('./database/db')
 const app = express();
 const bcrypt = require('bcrypt');
 app.use(express.json());
+const jwt = require('jsonwebtoken')
 
 
 const PORT = 3000;
