@@ -8,8 +8,26 @@ const jwt = require('jsonwebtoken')
 
 const PORT = 3000;
 
+//get user_id from the jwt token
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
-// GET all users
+    if (!token) {
+        return res.status(401).json({ error: 'Access token required' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ error: 'Invalid or expired token' });
+        }
+
+        req.user_id = decoded.user_id;
+        next();
+    });
+};
+
+//get all the users
 app.get('/api/users', async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM users');
@@ -22,41 +40,36 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
+//insert a new user to the database
 app.post('/api/users', async (req, res) => {
     try {
-        // Get data from request body
-        const {
-            username,
-            email,
-            password
-        } = req.body;
+       
+        const { username, email,password } = req.body;
 
-        // Validate required fields
+
         if (!username || !email || !password) {
             return res.status(400).json({
                 error: 'Missing required fields'
             });
         }
 
-        // Hash password
+    
         const saltRounds = 10;
         const password_hash = await bcrypt.hash(password, saltRounds);
 
-        // Insert into database
+
         const result = await db.query(
             'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING *',
             [username, email, password_hash]
         );
 
-        // Return created user (without password!)
         const user = result.rows[0];
-        delete user.password_hash; // Don't send password back!
+        delete user.password_hash; 
 
         res.status(201).json(user);
     } catch (err) {
         console.error(err);
 
-        // Handle unique constraint violations (duplicate username/email)
         if (err.code === '23505') {
             return res.status(409).json({
                 error: 'Username or email already exists'
@@ -69,12 +82,13 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-app.delete('/api/users/:id', async (req, res) => {
-    const { id } = req.params;
+//delete a certain user from the database
+app.delete('/api/users/:id', authenticateToken ,async (req, res) => {
+   
     try {
 
         const result = await db.query(
-            'DELETE FROM users WHERE user_id = $1', [id]
+            'DELETE FROM users WHERE user_id = $1', [req.user_id]
         );
         if (result.rowCount === 0){
             return res.status(404).json({error: 'user not found'});
@@ -89,6 +103,7 @@ app.delete('/api/users/:id', async (req, res) => {
     }
 });
 
+//find a user by its user id
 app.get('/api/users/:id', async (req, res) => {
     const {
         id
@@ -112,18 +127,13 @@ app.get('/api/users/:id', async (req, res) => {
     }
 });
 
-app.put('/api/users/:id', async (req, res) => {
-    const { id } = req.params;
-
+//update user's info
+app.put('/api/users/:id', authenticateToken , async (req, res) => {
 
     try {
-        const {
-            bio,
-            age,
-            profile_picture
-        } = req.body;
+        const { bio, age, profile_picture } = req.body;
         const result = await db.query(
-            'UPDATE users SET bio = $1, age = $2, profile_picture = $3 WHERE user_id = $4 RETURNING *', [bio, age, profile_picture, id]);
+            'UPDATE users SET bio = $1, age = $2, profile_picture = $3 WHERE user_id = $4 RETURNING *', [bio, age, profile_picture, req.user_id]);
         if (result.rows.length === 0) {
             return res.status(404).json({
                 error: 'user not found'
@@ -141,17 +151,18 @@ app.put('/api/users/:id', async (req, res) => {
     }
 });
 
-app.post ('/api/posts', async(req, res) => {
+//create a new post
+app.post ('/api/posts', authenticateToken, async(req, res) => {
 
     try{
 
-        const { user_id, content} = req.body;
+        const { content } = req.body;
 
-        if (!user_id || !content){
+        if (!content){
             return res.status(400).json({error: 'Missing reqired fields'});
         }
         const result = await db.query(
-            'INSERT INTO posts (user_id, content) VALUES ($1, $2) RETURNING *', [user_id, content]
+            'INSERT INTO posts (user_id, content) VALUES ($1, $2) RETURNING *', [req.user_id, content]
         );
 
         res.status(201).json(result.rows[0]);
@@ -164,6 +175,7 @@ app.post ('/api/posts', async(req, res) => {
     }
 } );
 
+//get all posts
 app.get ('/api/posts', async (req, res) => {
     try{
         const result = await db.query(
@@ -177,6 +189,8 @@ app.get ('/api/posts', async (req, res) => {
     }
 });
 
+
+//access a specific post
 app.get ('/api/posts/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -196,12 +210,13 @@ app.get ('/api/posts/:id', async (req, res) => {
     }
 });
 
-app.delete ('/api/posts/:id', async (req, res) => {
+//delete a specific post
+app.delete ('/api/posts/:id',authenticateToken, async (req, res) => {
     try {
-        const { id } = req.params;
-
+        const { id } = req.params
         const result = await db.query(
-            'DELETE FROM posts WHERE post_id = $1', [id]
+            'DELETE FROM posts WHERE post_id = $1 AND user_id = $2',
+            [id, req.user_id] 
         );
         if ((result).rowCount === 0){
             return res.status(404).json({error: 'post not found'});
@@ -214,17 +229,14 @@ app.delete ('/api/posts/:id', async (req, res) => {
     }
 });
 
-app.post('/api/posts/:id/like', async (req, res) => {
+//like a post
+app.post('/api/posts/:id/like', authenticateToken, async (req, res) => {
     try {
-        const { id } = req.params;
-        const { user_id } = req.body;
 
-        if (!user_id) {
-            return res.status(400).json({error: 'missing required field'});
-        }
+       const {id} = req.params;
 
         const result = await db.query(
-            'INSERT INTO likes (user_id, post_id) VALUES($1, $2) RETURNING *', [user_id, id]
+            'INSERT INTO likes (user_id, post_id) VALUES($1, $2) RETURNING *', [req.user_id, id]
         );
 
         res.status(201).json(result.rows[0]);
@@ -246,16 +258,13 @@ app.post('/api/posts/:id/like', async (req, res) => {
   
 });
 
-app.delete('/api/posts/:id/like', async (req, res) => {
+//unlike a post
+app.delete('/api/posts/:id/like', authenticateToken, async (req, res) => {
     try{
         const { id } = req.params;
-        const { user_id } = req.body;
-
-        if (!user_id){
-            return res.status(400).json({error: 'user_id required'});
-        }
+        
         const result = await db.query(
-            'DELETE FROM likes WHERE user_id = $1 AND post_id = $2', [user_id, id]
+            'DELETE FROM likes WHERE user_id = $1 AND post_id = $2', [req.user_id, id]
         );
 
         if (result.rowCount === 0){
@@ -276,6 +285,7 @@ app.delete('/api/posts/:id/like', async (req, res) => {
     }
 });
 
+//see who liked a post
 app.get('/api/posts/:id/likes', async (req, res) =>{
     try{
         const { id } = req.params;
@@ -291,16 +301,17 @@ app.get('/api/posts/:id/likes', async (req, res) =>{
     }
 });
 
-app.post('/api/posts/:id/comments', async (req, res) => {
+//write a comment under a post
+app.post('/api/posts/:id/comments',authenticateToken, async (req, res) => {
     try{
         const { id } = req.params;
-        const { user_id, content } = req.body;
+        const { content } = req.body;
 
-        if (!user_id || !content){
+        if (!content){
             return res.status(400).json({error: 'Missing required fields'});
         }
         const result = await db.query(
-            'INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3) RETURNING *', [user_id, id, content]
+            'INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3) RETURNING *', [req.user_id, id, content]
         );
 
         res.status(201).json(result.rows[0]);
@@ -317,6 +328,7 @@ app.post('/api/posts/:id/comments', async (req, res) => {
     }
 });
 
+//see all the comments under a post
 app.get('/api/posts/:id/comments', async (req, res) => {
     try{
         const { id } = req.params;
@@ -334,7 +346,8 @@ app.get('/api/posts/:id/comments', async (req, res) => {
     }
 });
 
-app.delete('/api/comments/:id', async (req, res) => {
+//delete a specific post
+app.delete('/api/comments/:id', authenticateToken, async (req, res) => {
     try{
         const { id } = req.params;
 
@@ -354,21 +367,18 @@ app.delete('/api/comments/:id', async (req, res) => {
     }
 });
 
-app.post('/api/users/:id/follow', async (req, res) => {
+
+//follow a user
+app.post('/api/users/:id/follow', authenticateToken, async (req, res) => {
     try{
         const { id } = req.params;
-        const { user_id } = req.body;
 
-        if (!user_id){
-            return res.status(400).json({error: 'user_id required'});
-        }
-
-        if (parseInt(user_id) === parseInt(id)){
+        if (parseInt(req.user_id) === parseInt(id)){
             return res.status(400).json({error: 'Cannot follow yourself'});
         }
 
         const result = await db.query(
-            'INSERT INTO follows (follower_id, following_id) VALUES ($1, $2) RETURNING *', [user_id, id]
+            'INSERT INTO follows (follower_id, following_id) VALUES ($1, $2) RETURNING *', [req.user_id, id]
         );
 
         res.status(201).json(result.rows[0]);
@@ -387,17 +397,13 @@ app.post('/api/users/:id/follow', async (req, res) => {
     }
 });
 
-app.delete('/api/users/:id/follow', async (req, res) => {
+// unfollow a user
+app.delete('/api/users/:id/follow', authenticateToken, async (req, res) => {
     try{
         const { id } = req.params;
-        const { user_id } = req.body;
-
-        if (!user_id){
-            return res.status(400).json({error: 'user_id required'});
-        }
-
+        
         const result = await db.query(
-            'DELETE FROM follows WHERE follower_id = $1 AND following_id = $2', [user_id, id]
+            'DELETE FROM follows WHERE follower_id = $1 AND following_id = $2', [req.user_id, id]
         );
 
         if (result.rowCount === 0){
@@ -412,6 +418,7 @@ app.delete('/api/users/:id/follow', async (req, res) => {
     }
 });
 
+// see followers of a user
 app.get('/api/users/:id/followers', async (req, res) => {
     try{
         const { id } = req.params;
@@ -428,6 +435,7 @@ app.get('/api/users/:id/followers', async (req, res) => {
     }
 });
 
+//see who a person is following
 app.get('/api/users/:id/following', async (req, res) => {
     try{
         const { id } = req.params;
@@ -444,6 +452,7 @@ app.get('/api/users/:id/following', async (req, res) => {
     }
 });
 
+//authenticate a user
 app.post('/api/auth/login', async (req, res) => {
     try{
         const { username, password } = req.body;
@@ -477,12 +486,14 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+//check if the app is working
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok'
     });
 });
 
+//version check the app
 app.get('/api/info', (req, res) => {
     res.json({
         project: 'Twitter clone',
@@ -490,6 +501,7 @@ app.get('/api/info', (req, res) => {
     });
 });
 
+//success message when the app is connected to the localhost
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
