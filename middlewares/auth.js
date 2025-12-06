@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const db = require('../database/db')
 
 //get user_id from the jwt token
 const authenticateToken = (req, res, next) => {
@@ -19,4 +20,54 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-module.exports = { authenticateToken };
+//make sure requester owns the post
+const checkPostOwnership = async (req, res, next) => {
+    try{
+        const { id } = req.params;
+        const result = await db.query(
+            'SELECT user_id FROM posts WHERE post_id = $1', [id]
+        );
+
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'post not found'});
+        }
+
+        if (result.rows[0].user_id !== req.user_id){
+            return res.status(403).json({error: 'can not modify others post'});
+        }
+        next();
+    }catch(err){
+        console.error(err);
+        res.status(500).json({error: 'database error'});
+    }
+};
+
+//make sure requester owns a comment 
+
+const checkCommentOwnership = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query(
+            'SELECT user_id FROM comments WHERE comment_id = $1', [id]
+        );
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'comment not found'});
+        }
+
+        if (result.rows[0].user_id !== req.user_id){
+            return res.status(403).json({error: 'can not modify others comment'});
+        }
+        next();
+
+    } catch(err){
+        console.error(err);
+        res.status(500).json({error: 'database error'});
+    }
+};
+
+module.exports = {
+    authenticateToken,
+    checkPostOwnership,
+    checkCommentOwnership
+};
+
