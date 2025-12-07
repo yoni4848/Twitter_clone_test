@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database/db');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, checkPostOwnership } = require('../middlewares/auth');
 
 //create a new post
 router.post ('/', authenticateToken, async(req, res) => {
@@ -63,18 +63,14 @@ router.get ('/:id', async (req, res) => {
 });
 
 //delete a specific post
-router.delete ('/:id',authenticateToken, async (req, res) => {
+router.delete ('/:id',authenticateToken, checkPostOwnership, async (req, res) => {
     try {
         const { id } = req.params
-        const result = await db.query(
-            'DELETE FROM posts WHERE post_id = $1 AND user_id = $2',
-            [id, req.user_id]
+        await db.query(
+            'DELETE FROM posts WHERE post_id = $1', [id]
         );
-        if ((result).rowCount === 0){
-            return res.status(404).json({error: 'post not found'});
-        }
 
-        res.status(200).json(result.rows[0]);
+        res.status(200).json({message: 'post deleted successfuly'});
     } catch(err){
         console.error(err);
         res.status(500).json({error: 'database error'});
