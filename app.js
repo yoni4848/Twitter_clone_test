@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 
-const PORT = 3000;
+const PORT = 3001;
 
 // Import routes
 const authRoutes = require('./routes/auth');
