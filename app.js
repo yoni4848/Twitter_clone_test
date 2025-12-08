@@ -12,6 +12,7 @@ const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const followRoutes = require('./routes/follows');
+const timelineRoutes = require('./routes/timeline')
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -19,6 +20,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/users', followRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/timeline', timelineRoutes);
 
 //check if the app is working
 app.get('/api/health', (req, res) => {
