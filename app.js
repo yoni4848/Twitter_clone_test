@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 
-const PORT = 3001;
+const PORT = 3000;
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -12,7 +12,8 @@ const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const followRoutes = require('./routes/follows');
-const timelineRoutes = require('./routes/timeline')
+const timelineRoutes = require('./routes/timeline');
+const exploreRoutes = require('./routes/explore');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -21,6 +22,7 @@ app.use('/api/users', followRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/timeline', timelineRoutes);
+app.use('/api/explore', exploreRoutes);
 
 //check if the app is working
 app.get('/api/health', (req, res) => {

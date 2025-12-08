@@ -4,6 +4,7 @@ const router = express.Router();
 const db = require('../database/db');
 const { authenticateToken } = require('../middlewares/auth');
 
+//show posts of users followed by an account
 router.get('/', authenticateToken, async (req, res) => {
     try{
         const result = await db.query(
@@ -18,3 +19,5 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 
 });
+
+module.exports = router;
