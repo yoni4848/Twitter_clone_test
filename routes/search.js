@@ -23,4 +23,26 @@ router.get('/posts', async (req, res) => {
     }
 });
 
+//search users by using their username
+
+router.get('/users', async (req, res) => {
+    try{
+        const { q } = req.query;
+        if(!q){
+            return res.status(400).json({error: 'missing keyword to search'});
+        }
+        const keyword = `%${q}%`;
+
+        const result = await db.query(
+            'SELECT username, user_id, profile_picture, bio, created_at FROM users WHERE username ILIKE $1', [keyword]
+        )
+
+        res.status(200).json(result.rows);
+
+    } catch(error){
+        console.error(err);
+        res.status(500).json({error: 'database error'});
+    }
+});
+
 module.exports = router;
