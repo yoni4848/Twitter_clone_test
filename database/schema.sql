@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict unWbDElzrJllcY6jxAJd2gnf3TGPYrYAmWqovYxfil7J9cgNKDmenaRCg9CQoac
+\restrict W0xrhKRJwRpwnyRfcN1OKEKEsU882EBhtjcZcD08ClgvPzW4aRLQGyi9uVVFe2T
 
 -- Dumped from database version 16.11 (Homebrew)
 -- Dumped by pg_dump version 16.11 (Homebrew)
@@ -84,6 +84,45 @@ CREATE TABLE public.likes (
 
 
 ALTER TABLE public.likes OWNER TO yonasmelkie;
+
+--
+-- Name: notifications; Type: TABLE; Schema: public; Owner: yonasmelkie
+--
+
+CREATE TABLE public.notifications (
+    notification_id integer NOT NULL,
+    user_id integer,
+    type character varying(20) NOT NULL,
+    from_user_id integer,
+    post_id integer,
+    is_read boolean DEFAULT false,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.notifications OWNER TO yonasmelkie;
+
+--
+-- Name: notifications_notification_id_seq; Type: SEQUENCE; Schema: public; Owner: yonasmelkie
+--
+
+CREATE SEQUENCE public.notifications_notification_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.notifications_notification_id_seq OWNER TO yonasmelkie;
+
+--
+-- Name: notifications_notification_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: yonasmelkie
+--
+
+ALTER SEQUENCE public.notifications_notification_id_seq OWNED BY public.notifications.notification_id;
+
 
 --
 -- Name: posts; Type: TABLE; Schema: public; Owner: yonasmelkie
@@ -170,6 +209,13 @@ ALTER TABLE ONLY public.comments ALTER COLUMN comment_id SET DEFAULT nextval('pu
 
 
 --
+-- Name: notifications notification_id; Type: DEFAULT; Schema: public; Owner: yonasmelkie
+--
+
+ALTER TABLE ONLY public.notifications ALTER COLUMN notification_id SET DEFAULT nextval('public.notifications_notification_id_seq'::regclass);
+
+
+--
 -- Name: posts post_id; Type: DEFAULT; Schema: public; Owner: yonasmelkie
 --
 
@@ -205,6 +251,14 @@ ALTER TABLE ONLY public.follows
 
 ALTER TABLE ONLY public.likes
     ADD CONSTRAINT likes_pkey PRIMARY KEY (user_id, post_id);
+
+
+--
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: yonasmelkie
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (notification_id);
 
 
 --
@@ -288,6 +342,30 @@ ALTER TABLE ONLY public.likes
 
 
 --
+-- Name: notifications notifications_from_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: yonasmelkie
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_from_user_id_fkey FOREIGN KEY (from_user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+--
+-- Name: notifications notifications_post_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: yonasmelkie
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_post_id_fkey FOREIGN KEY (post_id) REFERENCES public.posts(post_id) ON DELETE CASCADE;
+
+
+--
+-- Name: notifications notifications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: yonasmelkie
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(user_id) ON DELETE CASCADE;
+
+
+--
 -- Name: posts posts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: yonasmelkie
 --
 
@@ -299,5 +377,5 @@ ALTER TABLE ONLY public.posts
 -- PostgreSQL database dump complete
 --
 
-\unrestrict unWbDElzrJllcY6jxAJd2gnf3TGPYrYAmWqovYxfil7J9cgNKDmenaRCg9CQoac
+\unrestrict W0xrhKRJwRpwnyRfcN1OKEKEsU882EBhtjcZcD08ClgvPzW4aRLQGyi9uVVFe2T
 
