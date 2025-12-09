@@ -87,6 +87,16 @@ router.post('/:id/like', authenticateToken, async (req, res) => {
             'INSERT INTO likes (user_id, post_id) VALUES($1, $2) RETURNING *', [req.user_id, id]
         );
 
+        const post = await db.query('SELECT user_id FROM posts WHERE post_id = $1', [id]);
+        
+        if (post.rows[0] && post.rows[0].user_id !== req.user_id) {
+            await db.query(
+                'INSERT INTO notifications (user_id, type, from_user_id, post_id) VALUES ($1, $2, $3, $4)',
+                [post.rows[0].user_id, 'like', req.user_id, id]
+            );
+        }
+
+
         res.status(201).json(result.rows[0]);
 
     } catch(err){
@@ -161,6 +171,14 @@ router.post('/:id/comments',authenticateToken, async (req, res) => {
         const result = await db.query(
             'INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3) RETURNING *', [req.user_id, id, content]
         );
+        const post = await db.query('SELECT user_id FROM posts WHERE post_id = $1', [id]);
+
+        if (post.rows[0] && post.rows[0].user_id !== req.user_id) {
+            await db.query(
+                'INSERT INTO notifications (user_id, type, from_user_id, post_id) VALUES ($1, $2, $3, $4)',
+                [post.rows[0].user_id, 'comment', req.user_id, id]
+            );
+        }
 
         res.status(201).json(result.rows[0]);
 

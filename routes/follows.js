@@ -15,6 +15,10 @@ router.post('/:id/follow', authenticateToken, async (req, res) => {
         const result = await db.query(
             'INSERT INTO follows (follower_id, following_id) VALUES ($1, $2) RETURNING *', [req.user_id, id]
         );
+        await db.query(
+            'INSERT INTO notifications (user_id, type, from_user_id) VALUES ($1, $2, $3)',
+            [id, 'follow', req.user_id]
+        );
 
         res.status(201).json(result.rows[0]);
 
