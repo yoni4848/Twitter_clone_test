@@ -17,6 +17,29 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+//mark a single notification read
+router.put('/:id/read', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query(
+            'UPDATE notifications SET is_read = TRUE WHERE notification_id = $1 AND user_id = $2',
+            [id, req.user_id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({error: 'notification not found'});
+        }
+
+        res.status(200).json({message: 'notification marked as read'});
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({error: 'database error'});
+    }
+});
+
+module.exports = router;
+
+
 
 
 

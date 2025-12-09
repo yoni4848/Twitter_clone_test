@@ -15,6 +15,7 @@ const followRoutes = require('./routes/follows');
 const timelineRoutes = require('./routes/timeline');
 const exploreRoutes = require('./routes/explore');
 const searchRoutes = require('./routes/search');
+const notificationRoutes = require('./routes/notifications');
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -25,6 +26,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/timeline', timelineRoutes);
 app.use('/api/explore', exploreRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 //check if the app is working
 app.get('/api/health', (req, res) => {
