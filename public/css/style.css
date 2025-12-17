@@ -1,0 +1,24 @@
+body{
+    background-color: #fafafa;
+    color: #111111;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+#feed{
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.post{
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 16px 0;
+    border-radius: 12px;
+}
+
+.username{
+    font-weight: 600;
+    font-size: 14px;
+    color: #888888;
+}
