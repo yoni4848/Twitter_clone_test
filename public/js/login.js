@@ -17,7 +17,12 @@ loginForm.addEventListener("submit", (event) => {
     })
     .then(response => response.json())
     .then(data => {
-        localStorage.setItem('token', data.token);
-        window.location.href = '../home.html';
+        const errorMeassage = document.getElementById('error-message');
+        if (data.error){
+            errorMeassage.textContent = data.error;
+        } else{
+            localStorage.setItem('token', data.token);
+            window.location.href = '../home.html';
+        }
     });
 });

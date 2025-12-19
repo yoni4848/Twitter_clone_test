@@ -17,7 +17,13 @@ registerForm.addEventListener('submit', (event) => {
             username, email, password
         })
     })
-    .then(() => {
-        window.location.href = "../index.html";
+    .then(response => response.json())
+    .then(data => {
+        const errorMeassage = document.getElementById('error-message');
+        if (data.error){
+            errorMeassage.textContent = data.error;
+        } else{
+            window.location.href = "../index.html";
+        }
     })
 })

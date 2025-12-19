@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
 
         if (err.code === '23505') {
             return res.status(409).json({
-                error: 'Username or email already exists'
+                error: 'username or email already exists'
             });
         }
 
