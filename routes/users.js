@@ -7,7 +7,7 @@ const { authenticateToken } = require('../middlewares/auth');
 //get all the users
 router.get('/', async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM users');
+        const result = await db.query('SELECT user_id, username, email, bio, created_at FROM users');
         res.json(result.rows);
     } catch (err) {
         console.error(err);
