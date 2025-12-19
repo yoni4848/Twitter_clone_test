@@ -3,27 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Log In</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <form class="auth-form">
       <h1>CHIRP</h1>
       <br />
-      <h2>Welcome back</h2>
+      <h2>Join Chirp</h2>
 
-      <p class="prompt-txt">Enter your credentials to continue</p>
+      <p class="prompt-txt">Share your toughts to the world</p>
       <br />
       <p class="prompt-txt-left">USERNAME</p>
-      <input type="username" id="username" required placeholder="your username"/>
+      <input type="username" id="username" required placeholder="chosse a username"/>
+      <p class="prompt-txt-left">EMAIL</p>
+      <input type="email" id="email" required placeholder="your@email.com"/>
       <p class="prompt-txt-left">PASSWORD</p>
       <input type="password" id="password" required placeholder="your password"/>
-      <button id="signin-btn">SIGN IN</button>
+      <button id="signup-btn">CREATE ACCOUNT</button>
       <br />
       <p class="prompt-txt">OR</p>
       <br />
 
-      <p class="prompt-txt">New here? <a id="create-account" href="register.html"> Create an account</a></p>
+      <p class="prompt-txt">Already have an account? <a id="sign-in" href="index.html"> Sign in</a></p>
     </form>
     <script src="js/login.js"></script>
   </body>

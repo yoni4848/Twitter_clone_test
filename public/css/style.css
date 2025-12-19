@@ -33,7 +33,7 @@ body {
   color: red;
 }
 
-#login-form{
+.auth-form{
     max-width: 540px;
     margin: auto auto;
     margin-top: 60px;
@@ -41,7 +41,7 @@ body {
     text-align: center;
 }
 
-#signin-btn{
+#signin-btn, #signup-btn{
     display: block;
     font-size: 20px;
     margin: 20px 0;
@@ -53,7 +53,7 @@ body {
     border-radius: 10px;
 }
 
-#signin-btn:hover{
+#signin-btn:hover, #signup-btn:hover{
     cursor: pointer;
     opacity: 0.9;
 }
@@ -61,7 +61,7 @@ input {
     width: 100%;
     border: 1px solid #dddddd;
     border-radius: 10px;
-    padding: 10px;
+    padding: 15px;
     margin-bottom: 16px;
 }
 input:focus{
@@ -75,21 +75,24 @@ h1, h2{
 
 .prompt-txt{
     color: #878787;
+    font-size: 14px;
+    letter-spacing: 2px;
 }
 
 .prompt-txt-left{
     text-align: left;
-     color: #878787;
-     font-size: 14px;
+    color: #878787;
+    font-size: 12px;
+    letter-spacing: 2px;
 }
 a{
     text-decoration: none;
 }
-#create-account{
+#create-account, #sign-in{
     color:#111111;
 }
 
-#create-account:hover{
+#create-account:hover, #sign-in:hover{
     text-decoration: underline;
     cursor: pointer;
 }
