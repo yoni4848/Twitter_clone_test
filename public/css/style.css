@@ -1,22 +1,96 @@
-body{
-    background-color: #fafafa;
-    color: #111111;
-    font-family: 'Space Grotesk', -apple-system, sans-serif;
-     max-width: 540px;
-    margin: 0 auto;
+*{
+    box-sizing: border-box;
+}
+body {
+  background-color: #fafafa;
+  color: #111111;
+  font-family: "Space Grotesk", -apple-system, sans-serif;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.post {
+  background-color: #ffffff;
+  padding: 20px;
+  margin: 16px 0;
+  border-radius: 12px;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #888888;
+}
+#feed button {
+  background: none;
+  border: none;
+  color: #888888;
+  cursor: pointer;
+}
+
+#feed button.liked {
+  color: red;
+}
+
+#login-form{
+    max-width: 540px;
+    margin: auto auto;
+    margin-top: 60px;
     padding: 0 20px;
+    text-align: center;
 }
 
-
-.post{
-    background-color: #ffffff;
-    padding: 20px;
-    margin: 16px 0;
-    border-radius: 12px;
+#signin-btn{
+    display: block;
+    font-size: 20px;
+    margin: 20px 0;
+    width: 100%;
+    background-color: #282828;
+    color: #ffffff;
+    letter-spacing: 3px;
+    padding: 10px;
+    border-radius: 10px;
 }
 
-.username{
-    font-weight: 600;
-    font-size: 14px;
-    color: #888888;
+#signin-btn:hover{
+    cursor: pointer;
+    opacity: 0.9;
 }
+input {
+    width: 100%;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 16px;
+}
+input:focus{
+    outline: none;
+    border: 1px solid #111111;
+}
+
+h1, h2{
+    letter-spacing: 4px;
+}
+
+.prompt-txt{
+    color: #878787;
+}
+
+.prompt-txt-left{
+    text-align: left;
+     color: #878787;
+     font-size: 14px;
+}
+a{
+    text-decoration: none;
+}
+#create-account{
+    color:#111111;
+}
+
+#create-account:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+

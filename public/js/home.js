@@ -4,6 +4,37 @@ const feed = document.getElementById("feed");
 const exploreButton = document.getElementById("explore-button");
 const feedButton = document.getElementById("feed-button");
 
+
+//like a post
+function likePost(post_id){
+    fetch(`/api/posts/${post_id}/like`, {
+        method: 'POST',
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    })
+    .then(response => {
+        const likeButton = document.getElementById(`like-btn-${post_id}`);
+        if (response.status === 409){
+            fetch(`/api/posts/${post_id}/like`, {
+                method: 'DELETE',
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+            .then(() => {
+                let count = parseInt(likeButton.textContent.slice(1));
+                likeButton.textContent = `❤ ${count - 1}`;
+                likeButton.classList.remove("liked");
+            })
+        } else if (response.status === 201){
+            let count = parseInt(likeButton.textContent.slice(1));
+            likeButton.textContent = `❤ ${count + 1}`;
+            likeButton.classList.add("liked");
+        }
+    })
+}
+
 //display posts inside post div
 function displayPosts(posts){
     feed.innerHTML = "";
@@ -11,6 +42,7 @@ function displayPosts(posts){
         feed.innerHTML += `<div class="post">
                             <p class="username">@${element.username}</p>
                             <p class="content">${element.content}</p>
+                            <button id="like-btn-${element.post_id}" onclick="likePost(${element.post_id})">❤ ${element.like_count}</button>
                             </div>`
     });
 }

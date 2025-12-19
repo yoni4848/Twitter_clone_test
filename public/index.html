@@ -4,12 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chirp</title>
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <form id="login-form">
-      <input type="username" id="username" required />
-      <input type="password" id="password" required />
-      <button>Submit</button>
+      <h1>CHIRP</h1>
+      <br />
+      <h2>Welcome back!</h2>
+
+      <p class="prompt-txt">Enter your credentials to continue</p>
+      <br />
+      <p class="prompt-txt-left">USERNAME</p>
+      <input type="username" id="username" required placeholder="your username"/>
+      <p class="prompt-txt-left">PASSWORD</p>
+      <input type="password" id="password" required placeholder="your password"/>
+      <button id="signin-btn">SIGN IN</button>
+      <br /><br />
+      <p>OR</p>
+      <br />
+      <br />
+
+      <p class="prompt-txt">New here? <a id="create-account" href="register.html"> Create an account</a></p>
     </form>
     <script src="js/login.js"></script>
   </body>
