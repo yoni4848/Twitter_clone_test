@@ -7,13 +7,21 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <div id="header">
     <h1>Chirp</h1>
+      <div id="user-logout">
+        <p id="user">@</p>
+        <button id="log-out" class="home-btn">Logout</button>
+      </div>
+    </div>
     <form id="create-post">
-        <textarea id="post-text-box"></textarea>
-        <button class="share">Share</button>
+        <textarea id="post-text-box" placeholder="What's on your mind?"></textarea>
+        <button id="share-btn" class="home-btn">Share</button>
     </form>
-    <button id="explore-button">Explore</button>
-     <button id="feed-button">Feed</button>
+    <div id="tabs">
+      <button id="explore-button" class="tab active">Explore</button>
+      <button id="feed-button" class="tab">Feed</button>
+    </div>
     <div id="feed"></div>
     <script src="js/home.js"></script>
   </body>

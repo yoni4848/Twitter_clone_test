@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 *{
     box-sizing: border-box;
 }
@@ -100,4 +101,72 @@ a{
 .error{
     color: red;
     text-align: right;
+}
+#post-text-box{
+    border: none;
+    height: 100px;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+#post-text-box:focus{
+    outline: none;
+    border: 1px solid #111111;
+}
+
+#header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#user-logout{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#create-post{
+    display: flex;
+    flex-direction: column;
+}
+#share-btn{
+    align-self: flex-end;
+    background-color:  #282828;
+    color: #ffffff;
+}
+
+
+.home-btn{
+    background-color:  #282828;
+    color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    padding: 10px;
+}
+.home-btn:hover{
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+#tabs{
+    display: flex;
+    width: 100%;
+    margin: 16px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tab{
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.tab.active{
+    background-color: #282828;
+    color: #ffffff;
 }
