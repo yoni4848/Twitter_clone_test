@@ -12,7 +12,7 @@ if (!token){
 }
     
 //display the username at the top right corner
-user.textContent += localStorage.getItem('username');
+user.textContent = `@${localStorage.getItem('username')}`;
 
 //like a post
 function likePost(post_id){
@@ -53,12 +53,19 @@ function displayPosts(posts){
                             <p class="content">${element.content}</p>
                             <button id="like-btn-${element.post_id}" onclick="likePost(${element.post_id})">❤ ${element.like_count}</button>
                             </div>`
+        const likeBtn = document.getElementById(`like-btn-${element.post_id}`);
+        if (element.liked_by_user){
+            likeBtn.classList.add('liked');
+        }
     });
 }
 
 //fetch explore posts
 fetch('/api/explore', {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
     })
     .then(response => response.json())
     .then(data => {
@@ -81,7 +88,10 @@ createPost.addEventListener("submit", (event) => {
   .then(data => {
       postContent.value = "";
       return fetch('/api/explore', {
-        method: "GET"
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
       });
   })
   .then(response => response.json())
@@ -97,7 +107,10 @@ exploreButton.addEventListener("click", () => {
     feedButton.classList.remove('active');
     exploreButton.classList.add('active');
     fetch("/api/explore", {
-        method: "GET"
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
     })
     .then (response => response.json())
     .then(data => {
